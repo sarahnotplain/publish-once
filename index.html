@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Turn every Substack post into Instagram carousels and Facebook and Pinterest posts in your own brand, waiting as drafts you approve.">
+<meta property="og:title" content="Publish Once: Substack to social, on autopilot">
+<meta property="og:description" content="Every new post becomes branded social posts in your colors, waiting as drafts you approve. By Sarah, writer of Not Plain.">
+<meta property="og:image" content="https://sarahnotplain.github.io/publish-once/img/share.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/np-logo.jpg">
+<title>Publish Once, Show Up Everywhere</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column that opens up into image grids; black band for the approval step. Palette is the Not Plain brand (her Substack). */
+:root {
+  --bg: #F5F0E8;        /* cream, her Substack background */
+  --surface: #EDE6DA;
+  --fg: #1F1B17;        /* ink */
+  --muted: #6E6A66;
+  --rule: #D9D2C7;
+  --lavender: #8882A1;  /* her Subscribe buttons */
+  --accent: #6B6687;    /* deeper lavender for small labels */
+  --kraft: #B59C74;     /* the torn cardboard in her logo */
+  --band: #0E0D0C;      /* black band */
+  --band-fg: #F5F0E8;
+  --display: "EB Garamond", "Iowan Old Style", Georgia, serif;
+  --body: "EB Garamond", "Iowan Old Style", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15130F; --surface: #1F1C17; --fg: #EFE8DC; --muted: #A59E94; --rule: #36312A;
+    --lavender: #9A94B5; --accent: #B4AECB; --kraft: #C7AF87; --band: #000000; --band-fg: #EFE8DC;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15130F; --surface: #1F1C17; --fg: #EFE8DC; --muted: #A59E94; --rule: #36312A;
+  --lavender: #9A94B5; --accent: #B4AECB; --kraft: #C7AF87; --band: #000000; --band-fg: #EFE8DC;
+  color-scheme: dark;
+}
+
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 1.15rem; line-height: 1.55; }
+.wrap { max-width: 68rem; margin: 0 auto; padding-inline: clamp(16px, 4vw, 40px); }
+.read { max-width: 40rem; }
+.label { font-family: var(--mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+h1, h2, h3 { font-family: var(--display); font-weight: 500; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.6rem, 7vw, 4.6rem); line-height: 1.02; letter-spacing: -.01em; }
+h2 { font-size: clamp(1.7rem, 3.6vw, 2.4rem); line-height: 1.1; }
+h3 { font-size: 1.25rem; }
+p { margin: 0; }
+.lede { font-size: clamp(1.2rem, 2.2vw, 1.4rem); color: var(--fg); }
+.muted { color: var(--muted); }
+
+section { padding-block: clamp(3rem, 7vw, 5.5rem); display: grid; gap: 1.6rem; }
+section + section { border-top: 1px solid var(--rule); }
+
+header.hero { padding-block: clamp(3.5rem, 9vw, 7rem) clamp(2.5rem, 6vw, 4rem); display: grid; gap: 1.4rem; }
+.hero .rule { width: 3.5rem; height: 2px; background: var(--lavender); }
+
+/* One essay, four posts */
+.source { display: flex; flex-wrap: wrap; gap: .4rem 1rem; align-items: baseline; font-family: var(--mono); font-size: .8rem; color: var(--muted); }
+.source b { font-family: var(--display); font-size: 1.25rem; font-weight: 500; color: var(--fg); }
+.four { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(.8rem, 2vw, 1.4rem); }
+@media (max-width: 900px) { .four { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+figure { margin: 0; display: grid; gap: .6rem; align-content: start; min-width: 0; }
+figure img { display: block; width: 100%; height: auto; border-radius: 3px; box-shadow: 0 1px 0 var(--rule), 0 10px 24px -18px rgba(20,15,10,.45); }
+figcaption { display: grid; gap: .35rem; }
+figcaption .cap { font-size: 1rem; line-height: 1.45; color: var(--muted); }
+details { font-size: .98rem; }
+details summary { cursor: pointer; font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); list-style: none; }
+details summary::-webkit-details-marker { display: none; }
+details summary::before { content: "+ "; }
+details[open] summary::before { content: "– "; }
+details .caption { margin-top: .5rem; padding: .8rem .9rem; background: var(--surface); border-radius: 3px; white-space: pre-line; color: var(--fg); }
+summary:focus-visible, button:focus-visible { outline: 2px solid var(--lavender); outline-offset: 3px; }
+
+/* Variety gallery */
+.gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.8rem, 2vw, 1.4rem); }
+@media (max-width: 760px) { .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.feed-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 26rem); gap: clamp(1.5rem, 4vw, 3rem); align-items: center; }
+@media (max-width: 800px) { .feed-wrap { grid-template-columns: 1fr; } }
+.feed-copy { display: grid; gap: 1rem; max-width: 30rem; }
+.phone { background: #FFFFFF; border-radius: 22px; padding: 14px 10px 12px; box-shadow: 0 30px 60px -30px rgba(0,0,0,.7); width: 100%; max-width: 26rem; justify-self: center; }
+.phone-head { display: flex; align-items: center; gap: .7rem; padding: 0 .3rem .7rem; color: #1a1a1a; font-family: -apple-system, system-ui, sans-serif; font-size: .82rem; line-height: 1.25; }
+.phone-head strong { display: block; font-weight: 600; }
+.phone-head span { color: #6b6b6b; font-size: .75rem; }
+.avatar { width: 2.4rem; height: 2.4rem; border-radius: 50%; object-fit: cover; object-position: center; }
+.feed { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; }
+.feed img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; border-radius: 0; }
+.strip { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(13rem, 17rem); gap: clamp(.6rem, 1.5vw, 1rem); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: .6rem; }
+.strip img { width: 100%; height: auto; border-radius: 3px; scroll-snap-align: start; display: block; }
+.palettes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(.6rem, 2vw, 1.2rem); }
+@media (max-width: 700px) { .palettes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.palettes figcaption { display: flex; align-items: center; gap: .5rem; }
+.swatch { width: .8rem; height: .8rem; border-radius: 50%; flex: none; }
+.demos { display: grid; gap: clamp(1.4rem, 3vw, 2rem); }
+.demo { display: grid; gap: .6rem; }
+.demo-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(.5rem, 1.5vw, .9rem); }
+@media (max-width: 700px) { .demo-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.demo-row img { width: 100%; height: auto; border-radius: 3px; display: block; }
+.pins { display: grid; grid-template-columns: repeat(2, minmax(0, 14rem)); gap: clamp(.8rem, 2vw, 1.4rem); }
+
+/* Approval band */
+.band { background: var(--band); color: var(--band-fg); }
+.band section { border-top: 0; }
+.band .label { color: var(--kraft); }
+.band .muted { color: #B8B0A4; }
+.band .feed img, .band .avatar { max-width: none; }
+
+/* Steps: a real sequence */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 3vw, 2rem); counter-reset: step; }
+@media (max-width: 760px) { .steps { grid-template-columns: 1fr; } }
+.step { display: grid; gap: .5rem; align-content: start; min-width: 0; }
+.step::before { counter-increment: step; content: counter(step); font-family: var(--display); font-size: 2.6rem; line-height: 1; color: var(--lavender); }
+
+.included { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 2rem; padding: 0; margin: 0; list-style: none; }
+@media (max-width: 700px) { .included { grid-template-columns: 1fr; } }
+.included li { padding-left: 1.1rem; position: relative; }
+.included li::before { content: ""; position: absolute; left: 0; top: .72em; width: .45rem; height: 2px; background: var(--kraft); }
+
+.cta { display: grid; gap: 1rem; }
+.price { display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; align-items: baseline; }
+.price strong { font-family: var(--display); font-weight: 500; font-size: 2.2rem; }
+.email { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+.email code { font-family: var(--mono); font-size: 1rem; background: var(--surface); padding: .5rem .7rem; border-radius: 3px; user-select: all; overflow-wrap: anywhere; }
+.email button { font-family: var(--mono); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; background: var(--fg); color: var(--bg); border: 0; border-radius: 3px; padding: .6rem .9rem; cursor: pointer; }
+.options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1rem, 3vw, 1.6rem); }
+@media (max-width: 760px) { .options { grid-template-columns: 1fr; } }
+.option { background: var(--surface); border-radius: 6px; padding: clamp(1.1rem, 3vw, 1.6rem); display: grid; gap: .7rem; align-content: start; min-width: 0; }
+.option .price strong { font-size: 1.8rem; }
+.btn { display: inline-block; font-family: var(--mono); font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; background: var(--fg); color: var(--bg); text-decoration: none; border-radius: 3px; padding: .7rem 1rem; }
+.btn:focus-visible { outline: 2px solid var(--lavender); outline-offset: 3px; }
+footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) { figure img { transition: transform .25s ease; } figure:hover img { transform: translateY(-2px); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <p class="label">A Substack-to-social system · by Sarah, writer of Not Plain</p>
+    <h1>Publish once.<br>Show up everywhere.</h1>
+    <div class="rule" aria-hidden="true"></div>
+    <p class="lede read">When you publish on Substack, branded posts for Instagram, Facebook and Pinterest, with captions in your voice, are waiting for you as drafts the next morning. You read them, change anything you like, and approve. Nothing posts without you.</p>
+    <p class="muted read">Every example below comes from my own memoir newsletter, Not Plain, which runs on this system.</p>
+  </header>
+
+  <section aria-labelledby="one-essay">
+    <p class="label">One essay, four posts</p>
+    <h2 id="one-essay">A single essay becomes a week of posts</h2>
+    <p class="read muted">Each post pulls a different line or detail from the essay, in a different layout, so one piece of writing keeps showing up for days without repeating itself.</p>
+    <p class="source"><span>The essay</span><b>There, But Not Here</b><span>sarahnotplain.substack.com</span></p>
+    <div class="four">
+      <figure>
+        <img src="img/tbnh-quote.jpg" alt="Cream quote card: “There, but not here. Forever held within the edges of this 5x7 photo paper.” from There, But Not Here, with the Not Plain logo." width="608" height="760">
+        <figcaption>
+          <span class="label">Quote card · day 1</span>
+          <details><summary>Read the caption</summary><div class="caption">“There, but not here. Forever held within the edges of this 5x7 photo paper.”
+
+A man at the pharmacy gives his birth year, and it's close enough to my dad's that I start to wonder what he would look like now. All gray, or just speckled. Whether I'd even recognize him.
+
+He would have turned 62. So I took out the photos I keep hidden in my closet, and found a new kind of grief waiting there.
+
+New essay on Not Plain. Read it at the link in bio.</div></details>
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="img/tbnh-print.jpg" alt="A tilted cream photo print on lavender with the line: My mother isn't in any of them, but she occupies every single one." width="608" height="760">
+        <figcaption>
+          <span class="label">Photo print · day 2</span>
+          <details><summary>Read the caption</summary><div class="caption">“My mother isn’t in any of them, but she occupies every single one.”
+
+My dad holding a birthday cake with the words written in my mother's cursive. Four kids with their arms around him, all smiling. Every picture taken through her lens. And the realization that so many of my memories are really scenes my brain built from photographs.
+
+From There, But Not Here, on Not Plain. Read it at the link in bio.</div></details>
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="img/tbnh-title.jpg" alt="Black title card with the torn-kraft Not Plain logo, the title There, But Not Here, and its subtitle." width="608" height="760">
+        <figcaption>
+          <span class="label">Title card · day 3</span>
+          <details><summary>Read the caption</summary><div class="caption">There, But Not Here.
+
+An essay about the kind of grief that only arrives after years of living without someone. About a stack of 5x7 photos, a birthday my dad didn't get to have, and the mother who was always behind the camera.
+
+From Not Plain. Read it at the link in bio.</div></details>
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="img/tbnh-photo.jpg" alt="The essay's cover art, an early color photograph of pink roses, framed as a print on lavender with the title below." width="608" height="760">
+        <figcaption>
+          <span class="label">Cover art · day 4</span>
+          <details><summary>Read the caption</summary><div class="caption">There, But Not Here.
+
+Pictures of my mother exist, but they're scattered across Houston, kept by different family members, tucked away in closets where they'll stay. Not thrown away. Just never looked at.
+
+From Not Plain. Read it at the link in bio.</div></details>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="variety">
+    <p class="label">Layouts that fit the writing</p>
+    <h2 id="variety">Nine looks, so the feed never feels cut and paste</h2>
+    <p class="read muted">Each post gets the layout that suits its line: art with a quote, a typed manuscript page, a poster, a notebook card. It rotates automatically, so no two posts in a row look the same.</p>
+    <div class="gallery">
+      <figure><img src="img/np-artline.jpg" alt="A painting of a wooded path across the top, with an italic line below: My family is living in a small Texas town, and I'm 6 years old." width="608" height="760" loading="lazy"><figcaption><span class="label">Art + line</span></figcaption></figure>
+      <figure><img src="img/np-manuscript.jpg" alt="A line typed on a ruled draft page, marked with lavender highlighter: My mother isn't in any of them, but she occupies every single one." width="608" height="760" loading="lazy"><figcaption><span class="label">Manuscript page</span></figcaption></figure>
+      <figure><img src="img/np-poster.jpg" alt="A dimmed painted portrait with the title Secrets: Five Days Before Christmas, 1990 large and centered in capitals." width="608" height="760" loading="lazy"><figcaption><span class="label">Poster</span></figcaption></figure>
+      <figure><img src="img/np-cover.jpg" alt="An early color photograph of roses fading into dark, with the title There, But Not Here and its subtitle." width="608" height="760" loading="lazy"><figcaption><span class="label">Cover</span></figcaption></figure>
+      <figure><img src="img/secrets-print.jpg" alt="A tilted cream photo print on lavender with the line: Secrets started my life and secrets ended his." width="608" height="760" loading="lazy"><figcaption><span class="label">Photo print</span></figcaption></figure>
+      <figure><img src="img/np-note.jpg" alt="A notebook-style card with a line from a Substack Note beside a thin rule." width="608" height="760" loading="lazy"><figcaption><span class="label">Substack Notes, too</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="carousels">
+    <p class="label">Instagram carousels</p>
+    <h2 id="carousels">A scene people swipe through, not a single quote</h2>
+    <p class="read muted">Instagram gets carousels built from your own lines. This one, from "Secrets", follows a moment step by step and stops right before the turn, so people want the rest. Every slide is checked word for word against the essay.</p>
+    <div class="strip" role="list">
+      <img role="listitem" src="img/car-s1.jpg" alt="Slide 1: ...there were only three places she could have gone. The kitchen, the garage, the back door." width="480" height="600" loading="lazy">
+      <img role="listitem" src="img/car-s2.jpg" alt="Slide 2: The kitchen. ...the kitchen was empty" width="480" height="600" loading="lazy">
+      <img role="listitem" src="img/car-s3.jpg" alt="Slide 3: The garage. ...the garage door was closed like it always was" width="480" height="600" loading="lazy">
+      <img role="listitem" src="img/car-s4.jpg" alt="Slide 4: The back door. She followed the stone path and when she reached the wooden trellis, dripping with honeysuckle, she heard it..." width="480" height="600" loading="lazy">
+      <img role="listitem" src="img/car-s5.jpg" alt="Slide 5: Their eyes met. Read the rest in Secrets: Five Days Before Christmas, 1990. Link in bio." width="480" height="600" loading="lazy">
+    </div>
+    <p class="muted" style="font-size:.95rem">Swipe or scroll sideways to see all five slides.</p>
+  </section>
+
+  <section aria-labelledby="yours">
+    <p class="label">Your brand, not mine</p>
+    <h2 id="yours">It takes on your colors and your logo</h2>
+    <p class="read muted">During setup it reads your Substack's colors and logo, so every post looks like yours, not like mine. Here's the same carousel slide in four different palettes.</p>
+    <div class="palettes">
+      <figure><img src="img/brand-lavender-s2.jpg" alt="Carousel slide on lavender: He's holding a cake with the words Happy Birthday written in my mother's cursive..." width="560" height="700" loading="lazy"><figcaption><span class="swatch" style="background:#9691ac"></span><span class="label">Not Plain's lavender</span></figcaption></figure>
+      <figure><img src="img/brand-green-s2.jpg" alt="The same slide on forest green." width="560" height="700" loading="lazy"><figcaption><span class="swatch" style="background:#2F6B4F"></span><span class="label">Forest green</span></figcaption></figure>
+      <figure><img src="img/brand-terracotta-s2.jpg" alt="The same slide on terracotta." width="560" height="700" loading="lazy"><figcaption><span class="swatch" style="background:#B5533A"></span><span class="label">Terracotta</span></figcaption></figure>
+      <figure><img src="img/brand-navy-s2.jpg" alt="The same slide on navy." width="560" height="700" loading="lazy"><figcaption><span class="swatch" style="background:#2F4A7A"></span><span class="label">Navy</span></figcaption></figure>
+    </div>
+  </section>
+
+</div>
+
+<div class="band">
+  <div class="wrap">
+    <section aria-labelledby="approve">
+      <p class="label">Your feed, and your approval</p>
+      <h2 id="approve">A feed that looks designed, not repeated</h2>
+      <div class="feed-wrap">
+        <div class="feed-copy">
+          <p class="muted">Nine posts from three essays, the way they line up on Instagram: art, carousels, quotes, a manuscript page, a poster. The system rotates layouts so no two posts in a row look alike.</p>
+          <p class="muted">Every post arrives in Buffer as a draft. You read it, change anything you like, and approve it. Then it goes out once a day, on the schedule you choose. Nothing posts on its own.</p>
+        </div>
+        <div class="phone" aria-label="Preview of an Instagram profile grid made with Publish Once">
+          <div class="phone-head">
+            <img class="avatar" src="img/np-logo.jpg" alt="">
+            <div><strong>sarahnotplain</strong><span>Not Plain · memoir in progress</span></div>
+          </div>
+          <div class="feed">
+            <img src="img/car-s1.jpg" alt="Carousel cover: ...there were only three places she could have gone" loading="lazy">
+            <img src="img/tbnh-quote.jpg" alt="Quote card: There, but not here." loading="lazy">
+            <img src="img/np-artline.jpg" alt="Art + line: a wooded path, with a line from The Gloria Tornado" loading="lazy">
+            <img src="img/secrets-print.jpg" alt="Photo print on lavender: Secrets started my life and secrets ended his." loading="lazy">
+            <img src="img/np-poster.jpg" alt="Poster: Secrets, Five Days Before Christmas, 1990" loading="lazy">
+            <img src="img/np-manuscript.jpg" alt="Manuscript page with a highlighted line" loading="lazy">
+            <img src="img/np-cover.jpg" alt="Cover: roses fading to dark, There, But Not Here" loading="lazy">
+            <img src="img/np-note.jpg" alt="Notes card" loading="lazy">
+            <img src="img/tbnh-photo.jpg" alt="Cover art as a framed print on lavender" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="wrap">
+  <section aria-labelledby="how">
+    <p class="label">How it works</p>
+    <h2 id="how">Three steps, and only one of them is yours</h2>
+    <div class="steps">
+      <div class="step"><h3>You publish on Substack</h3><p class="muted">Write and publish exactly as you do now. Nothing changes about your process.</p></div>
+      <div class="step"><h3>Drafts appear by morning</h3><p class="muted">A daily check finds your new post and creates up to three branded posts per platform, with captions and a tracked link.</p></div>
+      <div class="step"><h3>You approve</h3><p class="muted">Open Buffer, read the drafts, tweak anything, and add them to your queue. Nothing publishes on its own.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="included">
+    <p class="label">What's included</p>
+    <h2 id="included">Set up with you, in about a week</h2>
+    <ul class="included">
+      <li>Image templates in your logo, colors and fonts</li>
+      <li>A caption guide written in your voice</li>
+      <li>Up to 3 posts per article, for Instagram, Facebook and Pinterest</li>
+      <li>Optional posts from your Substack Notes</li>
+      <li>Link tracking, so Substack shows which platform sends readers</li>
+      <li>Sample images from your own posts before anything is installed</li>
+      <li>A 90-minute setup call over screen share</li>
+      <li>A check-in after your first week</li>
+    </ul>
+    <p class="muted read">You'll need a Substack, a free Buffer account, a free GitHub account, and a Claude Pro subscription, which runs the daily check.</p>
+  </section>
+
+  <section aria-labelledby="start" class="cta">
+    <p class="label">Two ways to get it</p>
+    <h2 id="start">Want this for your Substack?</h2>
+    <div class="options">
+      <div class="option">
+        <p class="label">Do it yourself</p>
+        <h3>The Publish Once kit</h3>
+        <div class="price"><strong>$47</strong><span class="muted">launches October 13</span></div>
+        <p>The same system, ready for your Substack. Open it in the Claude app, type "set me up", and Claude walks you through setup in about an hour: your colors, your voice, Buffer, and the daily schedule.</p>
+        <p class="muted">Before launch, 5 founding testers get it for $15 in exchange for honest feedback. Email me if you'd like one of the spots.</p>
+      </div>
+      <div class="option">
+        <p class="label">Done with you</p>
+        <h3>I set it up with you</h3>
+        <div class="price"><strong>$250</strong><span class="muted">beta, first two writers, then $450</span></div>
+        <p>I build your templates and caption voice from your Substack, show you samples first, then we install it together on a 90-minute screen share. A week later I check in.</p>
+        <p><a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeTayaQkRr_i_2lYrc9AGi4REm5x6vrcWOC0hkH4rQ1hMj1Iw/viewform" target="_blank" rel="noopener">Start with a short questionnaire</a></p>
+        <p class="muted">No call needed to start. I read every answer and reply within 2 days. Optional care plan: $75 a month.</p>
+      </div>
+    </div>
+    <p class="read muted">Both need a Claude Pro plan (about $20/month, paid to Anthropic) and free Buffer and GitHub accounts. Questions? Email me:</p>
+    <div class="email">
+      <code id="addr">sarahnotplain@gmail.com</code>
+      <button type="button" id="copy">Copy email</button>
+      <span id="copied" class="muted" role="status" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <footer>Examples from Not Plain · sarahnotplain.substack.com</footer>
+</div>
+
+<script>
+document.getElementById('copy').addEventListener('click', function () {
+  var text = document.getElementById('addr').textContent;
+  var status = document.getElementById('copied');
+  function selectIt() {
+    var r = document.createRange(); r.selectNodeContents(document.getElementById('addr'));
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    status.textContent = 'Selected. Press Cmd+C to copy.';
+  }
+  try {
+    navigator.clipboard.writeText(text).then(function () { status.textContent = 'Copied'; }, selectIt);
+  } catch (e) { selectIt(); }
+});
+</script>
+</body>
+</html>
